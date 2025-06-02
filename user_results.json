@@ -1,0 +1,21 @@
+{
+  "hoi": [
+    {
+      "result": "lose",
+      "number": 52,
+      "attempts_left": 0
+    },
+    {
+      "result": "lose",
+      "number": 93,
+      "attempts_left": 0
+    }
+  ],
+  "hello": [
+    {
+      "result": "lose",
+      "number": 30,
+      "attempts_left": 0
+    }
+  ]
+}

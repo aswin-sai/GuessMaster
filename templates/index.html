@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ title if title else "GuessMaster: The Ultimate Number Challenge" }}</title>
+    <style>
+        :root {
+            --primary: #18181b;
+            --secondary: #232336;
+            --accent: #44403c;
+            --success: #38bdf8;
+            --danger: #ef4444;
+            --bg-dark: #111112;
+            --surface: #18181b;
+            --surface-light: #232336;
+            --surface-dark: #111112;
+            --white: #fff;
+            --border-radius: 22px;
+            --shadow: 0 8px 32px 0 rgba(0,0,0,0.18);
+            --shadow-light: 0 2px 8px 0 rgba(0,0,0,0.10);
+        }
+        html, body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+        }
+        body {
+            min-height: 100vh;
+            margin: 0;
+            background: linear-gradient(135deg, #111112 0%, #232336 100%);
+            font-family: 'SF Pro Display', 'Segoe UI', 'Roboto', Arial, sans-serif;
+            color: var(--white);
+            display: flex;
+            flex-direction: column;
+            align-items: stretch;
+            justify-content: flex-start;
+            letter-spacing: 0.01em;
+        }
+        .game-container {
+            background: var(--surface);
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            padding: 2.5rem 1.5rem 2rem 1.5rem;
+            width: 98vw;
+            max-width: 420px;
+            min-height: 80vh;
+            margin: 3vh auto 2vh auto;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            position: relative;
+            overflow: hidden;
+            border: 1.5px solid var(--surface-light);
+            transition: box-shadow 0.2s;
+        }
+        h1 {
+            color: var(--white);
+            margin-bottom: 1.2rem;
+            font-size: 2.2rem;
+            letter-spacing: 1.5px;
+            font-weight: 800;
+            text-shadow: none;
+            background: linear-gradient(90deg, var(--white), var(--accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        h2 {
+            margin: 0.5em 0 0.2em 0;
+            font-size: 1.2em;
+            color: var(--accent);
+            font-weight: 700;
+            letter-spacing: 1px;
+            text-shadow: none;
+        }
+        #game-status {
+            font-size: 1.1rem;
+            margin-bottom: 1.5rem;
+            color: var(--white);
+            background: var(--surface-light);
+            border-radius: 12px;
+            padding: 0.7em 0.5em;
+            margin-top: 0.5em;
+        }
+        #result {
+            margin-top: 1.2rem;
+            font-size: 1.15rem;
+            font-weight: 700;
+            color: var(--success);
+            background: var(--surface-light);
+            border-radius: 12px;
+            padding: 0.8em 0.7em;
+            box-shadow: var(--shadow-light);
+            letter-spacing: 1px;
+            transition: background 0.2s, color 0.2s;
+        }
+        #result.error {
+            color: var(--danger);
+            background: #1a1818;
+        }
+        #result.hint {
+            color: var(--accent);
+            background: #18181b;
+        }
+        #user-result {
+            color: var(--white);
+            font-size: 1.05em;
+            font-weight: 700;
+            text-shadow: none;
+        }
+        button {
+            background: linear-gradient(90deg, var(--surface-dark) 0%, var(--accent) 100%);
+            color: var(--white);
+            border: none;
+            border-radius: 14px;
+            padding: 0.9em 2.2em;
+            font-size: 1.13rem;
+            font-weight: 700;
+            cursor: pointer;
+            margin-top: 0.7em;
+            box-shadow: var(--shadow-light);
+            transition: background 0.2s, transform 0.2s, box-shadow 0.2s;
+            letter-spacing: 1px;
+            outline: none;
+            position: relative;
+            z-index: 1;
+        }
+        button:active {
+            transform: scale(0.97);
+            box-shadow: 0 1px 4px var(--accent);
+        }
+        button:focus {
+            outline: 2px solid var(--success);
+            outline-offset: 2px;
+        }
+        button:hover {
+            background: linear-gradient(90deg, var(--accent) 0%, var(--surface-dark) 100%);
+            color: var(--white);
+            box-shadow: 0 4px 12px var(--success), 0 0 8px var(--accent);
+        }
+        #guess-section {
+            margin-top: 1.2rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.7em;
+        }
+        #guess-input, #username-input {
+            padding: 0.7em 1.2em;
+            border: 1.5px solid var(--secondary);
+            border-radius: 12px;
+            font-size: 1.13rem;
+            width: 90vw;
+            max-width: 320px;
+            text-align: center;
+            outline: none;
+            margin-bottom: 0.2em;
+            background: var(--surface-dark);
+            color: var(--white);
+            transition: border 0.2s, box-shadow 0.2s, background 0.2s;
+            box-shadow: var(--shadow-light);
+        }
+        #guess-input:focus, #username-input:focus {
+            border: 2px solid var(--accent);
+            background: var(--surface-light);
+            box-shadow: 0 2px 8px var(--accent);
+        }
+        #toggle-scoreboard-btn {
+            background: linear-gradient(90deg, var(--accent) 0%, var(--surface-dark) 100%);
+            color: var(--white);
+            font-weight: 800;
+            margin-top: 2em;
+            border-radius: 14px;
+            box-shadow: var(--shadow-light);
+        }
+        #toggle-scoreboard-btn:hover {
+            background: linear-gradient(90deg, var(--surface-dark) 0%, var(--accent) 100%);
+            color: var(--white);
+        }
+        #scoreboard-section {
+            background: var(--surface);
+            margin: 2em 2em 1em 2em;
+            max-width: 350px;
+            min-width: 260px;
+            width: 100%;
+            display: none;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+        }
+        #scoreboard {
+            background: var(--surface-dark);
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 1em;
+            margin-top: 0.5em;
+            border-radius: 8px;
+            overflow: hidden;
+            color: var(--white);
+        }
+        #scoreboard th, #scoreboard td {
+            padding: 10px 6px;
+            text-align: center;
+        }
+        #scoreboard th {
+            background: var(--secondary);
+            color: var(--white);
+            font-weight: 800;
+            letter-spacing: 0.5px;
+            border-bottom: 2px solid var(--accent);
+        }
+        #scoreboard tr:nth-child(even) {
+            background: #18181b;
+        }
+        #scoreboard tr:nth-child(odd) {
+            background: #111112;
+        }
+        #scoreboard tr:hover {
+            background: var(--accent);
+            color: var(--white);
+            transition: background 0.2s, color 0.2s;
+        }
+        /* Fullscreen scoreboard */
+        #scoreboard-fullscreen {
+            display:none;
+            position:fixed;
+            top:0; left:0; width:100vw; height:100vh;
+            background:var(--surface-dark);
+            z-index:1000;
+            align-items:center;
+            justify-content:center;
+            flex-direction:column;
+            animation: fadein 0.6s;
+        }
+        #scoreboard-fullscreen table {
+            background: var(--surface-dark);
+            width: 100%;
+            border-collapse: collapse;
+            border-radius: 8px;
+            color: var(--white);
+            box-shadow: var(--shadow);
+        }
+        #scoreboard-fullscreen th, #scoreboard-fullscreen td {
+            padding: 12px 8px;
+            text-align: center;
+            font-size: 1.1em;
+        }
+        #scoreboard-fullscreen th {
+            background: var(--secondary);
+            color: var(--white);
+            font-weight: 800;
+            letter-spacing: 0.5px;
+            border-bottom: 2px solid var(--accent);
+        }
+        #scoreboard-fullscreen tr:nth-child(even) {
+            background: #18181b;
+        }
+        #scoreboard-fullscreen tr:nth-child(odd) {
+            background: #111112;
+        }
+        #scoreboard-fullscreen tr:hover {
+            background: var(--accent);
+            color: var(--white);
+            transition: background 0.2s, color 0.2s;
+        }
+        @keyframes scoreboard-pop {
+            0% { transform: scale(0.85); opacity: 0;}
+            70% { transform: scale(1.05); opacity: 1;}
+            100% { transform: scale(1); opacity: 1;}
+        }
+        @media (max-width: 900px) {
+            #main-content {
+                flex-direction: column;
+                align-items: center;
+            }
+            #scoreboard-section {
+                margin: 2em auto 1em auto;
+                max-width: 98vw;
+            }
+        }
+        @media (max-width: 600px) {
+            .game-container {
+                padding: 1.2rem 0.2rem 1.5rem 0.2rem;
+                max-width: 100vw;
+            }
+            h1 {
+                font-size: 1.3rem;
+            }
+            #scoreboard th, #scoreboard td,
+            #scoreboard-fullscreen th, #scoreboard-fullscreen td {
+                padding: 6px 2px;
+                font-size: 0.95em;
+            }
+        }
+        /* Animated background particles */
+        .particle {
+            position: absolute;
+            border-radius: 50%;
+            opacity: 0.18;
+            pointer-events: none;
+            z-index: 0;
+            animation: float 8s infinite alternate;
+            box-shadow: 0 0 18px 6px #f5e1f7, 0 0 32px 12px #f472b6aa;
+        }
+        @keyframes float {
+            0% { transform: translateY(0) scale(1);}
+            100% { transform: translateY(-40px) scale(1.1);}
+        }
+    </style>
+</head>
+<body>
+    <div id="main-content" style="display: flex; flex-direction: row; align-items: flex-start; justify-content: center; width: 100vw; min-height: 100vh;">
+        <div class="game-container" style="flex: 1 1 400px; max-width: 480px;">
+            <div class="particle" style="width:60px;height:60px;top:10%;left:5%;background:linear-gradient(135deg,#f5e1f7 0%,#f472b6 100%);animation-delay:0s;"></div>
+            <div class="particle" style="width:40px;height:40px;top:70%;left:80%;background:linear-gradient(135deg,#f472b6 0%,#f5e1f7 100%);animation-delay:2s;"></div>
+            <div class="particle" style="width:30px;height:30px;top:50%;left:60%;background:linear-gradient(135deg,#f5e1f7 0%,#f472b6 100%);animation-delay:1s;"></div>
+            <div class="particle" style="width:80px;height:80px;top:80%;left:10%;background:linear-gradient(135deg,#f472b6 0%,#f5e1f7 100%);animation-delay:3s;"></div>
+            <h1>{{ title if title else "GuessMaster: The Ultimate Number Challenge" }}</h1>
+            <div style="margin-bottom:1em;">
+                <input type="text" id="username-input" placeholder="Enter your username">
+            </div>
+            <div id="game-status">Click "Start Game" to begin.</div>
+            <button id="start-btn">Start Game</button>
+            <div id="guess-section" style="display:none;">
+                <input type="number" id="guess-input" min="10" max="99" placeholder="Enter 2-digit number">
+                <button id="guess-btn">Guess</button>
+            </div>
+            <div id="result"></div>
+            <div id="user-result"></div>
+            <button id="toggle-scoreboard-btn" style="margin-top:1.5em;">Show Scoreboard</button>
+        </div>
+        <div id="scoreboard-section">
+            <h2>Scoreboard</h2>
+            <table id="scoreboard">
+                <thead>
+                    <tr>
+                        <th>User</th>
+                        <th>Result</th>
+                        <th>Attempts Left</th>
+                    </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div id="scoreboard-fullscreen" style="display:none;">
+        <div style="display:flex;justify-content:center;gap:1em;margin:2em auto 1em auto;">
+            <button id="hide-scoreboard-btn">Hide Scoreboard</button>
+            <button id="refresh-scoreboard-btn">Refresh Scoreboard</button>
+        </div>
+        <div style="width:100%; max-width: 500px; margin:0 auto; animation: scoreboard-pop 0.7s;">
+            <h2 style="text-align:center; color:var(--accent); margin-bottom:0.7em;">Scoreboard</h2>
+            <table id="scoreboard-full">
+                <thead>
+                    <tr>
+                        <th>User</th>
+                        <th>Result</th>
+                        <th>Attempts Left</th>
+                    </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <script>
+        const startBtn = document.getElementById('start-btn');
+        const guessSection = document.getElementById('guess-section');
+        const guessBtn = document.getElementById('guess-btn');
+        const guessInput = document.getElementById('guess-input');
+        const gameStatus = document.getElementById('game-status');
+        const resultDiv = document.getElementById('result');
+        const usernameInput = document.getElementById('username-input');
+        const userResultDiv = document.getElementById('user-result');
+        const toggleScoreboardBtn = document.getElementById('toggle-scoreboard-btn');
+        const scoreboardSection = document.getElementById('scoreboard-section');
+        const scoreboardFullscreen = document.getElementById('scoreboard-fullscreen');
+        const hideScoreboardBtn = document.getElementById('hide-scoreboard-btn');
+        const refreshScoreboardBtn = document.getElementById('refresh-scoreboard-btn');
+
+        function updateScoreboard() {
+            fetch('/scoreboard')
+                .then(res => res.json())
+                .then(data => {
+                    // Update sidebar scoreboard
+                    const tbody = document.querySelector('#scoreboard tbody');
+                    tbody.innerHTML = '';
+                    if (data.length === 0) {
+                        const row = document.createElement('tr');
+                        row.innerHTML = `<td colspan="3" style="text-align:center;">No games played yet.</td>`;
+                        tbody.appendChild(row);
+                    } else {
+                        const latestResultByUser = {};
+                        data.forEach(row => {
+                            if (!latestResultByUser[row.username]) {
+                                latestResultByUser[row.username] = row;
+                            }
+                        });
+                        Object.values(latestResultByUser).forEach(row => {
+                            const tr = document.createElement('tr');
+                            tr.innerHTML = `
+                                <td>${row.username}</td>
+                                <td style="color:${row.result === 'win' ? '#22d3ee' : '#f87171'};font-weight:700;">${row.result}</td>
+                                <td>${row.attempts_left}</td>
+                            `;
+                            tbody.appendChild(tr);
+                        });
+                    }
+                    // Update fullscreen scoreboard
+                    const tbodyFull = document.querySelector('#scoreboard-full tbody');
+                    tbodyFull.innerHTML = '';
+                    if (data.length === 0) {
+                        const row = document.createElement('tr');
+                        row.innerHTML = `<td colspan="3" style="text-align:center;">No games played yet.</td>`;
+                        tbodyFull.appendChild(row);
+                    } else {
+                        const latestResultByUser = {};
+                        data.forEach(row => {
+                            if (!latestResultByUser[row.username]) {
+                                latestResultByUser[row.username] = row;
+                            }
+                        });
+                        Object.values(latestResultByUser).forEach(row => {
+                            const tr = document.createElement('tr');
+                            tr.innerHTML = `
+                                <td>${row.username}</td>
+                                <td style="color:${row.result === 'win' ? '#22d3ee' : '#f87171'};font-weight:700;">${row.result}</td>
+                                <td>${row.attempts_left}</td>
+                            `;
+                            tbodyFull.appendChild(tr);
+                        });
+                    }
+                });
+        }
+
+        function showUserResult(username) {
+            fetch(`/user_result?username=${encodeURIComponent(username)}`)
+                .then(res => res.json())
+                .then(data => {
+                    if (data.result === "win") {
+                        userResultDiv.textContent = `🎉 "${username}" won! Number: ${data.number}, Attempts left: ${data.attempts_left}`;
+                    } else if (data.result === "lose") {
+                        userResultDiv.textContent = `😢 "${username}" lost. Number was: ${data.number}`;
+                    } else if (data.message) {
+                        userResultDiv.textContent = data.message;
+                    } else {
+                        userResultDiv.textContent = '';
+                    }
+                });
+        }
+
+        startBtn.addEventListener('click', function() {
+            const username = usernameInput.value.trim();
+            if (!username) {
+                resultDiv.textContent = "Please enter your username.";
+                resultDiv.className = "error";
+                return;
+            }
+            fetch('/start', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({username: username})
+            })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.error) {
+                        resultDiv.textContent = data.error;
+                        resultDiv.className = "error";
+                        return;
+                    }
+                    gameStatus.textContent = data.message;
+                    guessSection.style.display = '';
+                    resultDiv.textContent = '';
+                    resultDiv.className = "";
+                    userResultDiv.textContent = '';
+                    guessInput.value = '';
+                    guessInput.focus();
+                    guessedNumbers = new Set();
+                    updateScoreboard();
+                });
+        });
+
+        guessBtn.addEventListener('click', function() {
+            const guess = guessInput.value;
+            const username = usernameInput.value.trim();
+            if (!username) {
+                resultDiv.textContent = "Please enter your username.";
+                resultDiv.className = "error";
+                return;
+            }
+            if (!guess || guess < 10 || guess > 99) {
+                resultDiv.textContent = "Please enter a valid 2-digit number.";
+                resultDiv.className = "error";
+                return;
+            }
+            if (guessedNumbers.has(guess)) {
+                resultDiv.textContent = "You've already guessed this number! Try a different one.";
+                resultDiv.className = "error";
+                return;
+            }
+            guessedNumbers.add(guess);
+            fetch(`/guess?username=${encodeURIComponent(username)}`, {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({guess: guess})
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.result === 'correct') {
+                    gameStatus.textContent = '🎉 Congratulations! You guessed the number!';
+                    resultDiv.textContent = data.clue;
+                    resultDiv.className = "";
+                    guessSection.style.display = 'none';
+                    showUserResult(username);
+                    updateScoreboard();
+                } else if (data.result === 'wrong') {
+                    resultDiv.textContent = data.clue;
+                    resultDiv.className = "hint";
+                } else if (data.result === 'failed') {
+                    gameStatus.textContent = 'Game Over!';
+                    resultDiv.textContent = data.clue;
+                    resultDiv.className = "error";
+                    guessSection.style.display = 'none';
+                    showUserResult(username);
+                    updateScoreboard();
+                } else if (data.error) {
+                    resultDiv.textContent = data.error;
+                    resultDiv.className = "error";
+                }
+            });
+        });
+
+        guessInput.addEventListener('keyup', function(e) {
+            if (e.key === 'Enter') {
+                guessBtn.click();
+            }
+        });
+
+        toggleScoreboardBtn.addEventListener('click', function() {
+            document.getElementById('main-content').style.display = 'none';
+            scoreboardFullscreen.style.display = 'flex';
+            updateScoreboard();
+        });
+
+        hideScoreboardBtn.addEventListener('click', function() {
+            scoreboardFullscreen.style.display = 'none';
+            document.getElementById('main-content').style.display = 'flex';
+        });
+
+        refreshScoreboardBtn.addEventListener('click', function() {
+            fetch('/reset_scoreboard', { method: 'POST' })
+                .then(res => res.json())
+                .then(() => {
+                    updateScoreboard();
+                });
+        });
+
+        // Load scoreboard on page load
+        updateScoreboard();
+    </script>
+</body>
+</html>
