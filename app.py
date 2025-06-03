@@ -4,9 +4,10 @@ from random import randint
 import psycopg
 import os
 
+
 app = Flask(__name__)
 app.secret_key = 'your_secret_key'  # Needed for session
-
+@app.route('/')
 # Set your PostgreSQL connection string here
 DATABASE_URL = os.environ.get(
     "DATABASE_URL",
@@ -59,7 +60,7 @@ def init_db():
 # Remove @app.before_serving and call init_db() directly at startup
 init_db()
 
-@app.route('/')
+
 def index():
     return render_template('index.html', title="GuessMaster: The Ultimate Number Challenge")
 
