@@ -20,6 +20,21 @@
             --shadow: 0 8px 32px 0 rgba(0,0,0,0.18);
             --shadow-light: 0 2px 8px 0 rgba(0,0,0,0.10);
         }
+        body.light-mode {
+            --primary: #f5f6fa;
+            --secondary: #e7eaf6;
+            --accent: #a7bfe8;
+            --success: #38bdf8;
+            --danger: #ef4444;
+            --bg-dark: #f5f6fa;
+            --surface: #fff;
+            --surface-light: #f0f4fa;
+            --surface-dark: #e7eaf6;
+            --white: #232336;
+            --border-radius: 22px;
+            --shadow: 0 8px 32px 0 rgba(160,180,220,0.13);
+            --shadow-light: 0 2px 8px 0 rgba(160,180,220,0.08);
+        }
         html, body {
             height: 100%;
             margin: 0;
@@ -28,7 +43,7 @@
         body {
             min-height: 100vh;
             margin: 0;
-            background: linear-gradient(135deg, #111112 0%, #232336 100%);
+            background: linear-gradient(135deg, var(--bg-dark) 0%, var(--surface-light) 100%);
             font-family: 'SF Pro Display', 'Segoe UI', 'Roboto', Arial, sans-serif;
             color: var(--white);
             display: flex;
@@ -36,6 +51,31 @@
             align-items: stretch;
             justify-content: flex-start;
             letter-spacing: 0.01em;
+            transition: background 0.3s, color 0.3s;
+        }
+        .theme-toggle-btn {
+            position: absolute;
+            top: 18px;
+            right: 24px;
+            z-index: 10;
+            background: var(--surface-light);
+            color: var(--accent);
+            border: none;
+            border-radius: 50%;
+            width: 44px;
+            height: 44px;
+            box-shadow: var(--shadow-light);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            transition: background 0.2s, color 0.2s, box-shadow 0.2s;
+        }
+        .theme-toggle-btn:hover {
+            background: var(--accent);
+            color: var(--surface-light);
+            box-shadow: 0 4px 12px var(--accent), 0 0 8px var(--accent);
         }
         .game-container {
             background: var(--surface);
@@ -54,7 +94,7 @@
             position: relative;
             overflow: hidden;
             border: 1.5px solid var(--surface-light);
-            transition: box-shadow 0.2s;
+            transition: box-shadow 0.2s, background 0.3s, color 0.3s;
         }
         h1 {
             color: var(--white);
@@ -101,15 +141,24 @@
             color: var(--danger);
             background: #1a1818;
         }
+        body.light-mode #result.error {
+            background: #fbeaea;
+        }
         #result.hint {
             color: var(--accent);
             background: #18181b;
+        }
+        body.light-mode #result.hint {
+            background: #e7eaf6;
         }
         #user-result {
             color: var(--white);
             font-size: 1.05em;
             font-weight: 700;
             text-shadow: none;
+        }
+        body.light-mode #user-result {
+            color: #232336;
         }
         button {
             background: linear-gradient(90deg, var(--surface-dark) 0%, var(--accent) 100%);
@@ -122,7 +171,7 @@
             cursor: pointer;
             margin-top: 0.7em;
             box-shadow: var(--shadow-light);
-            transition: background 0.2s, transform 0.2s, box-shadow 0.2s;
+            transition: background 0.2s, transform 0.2s, box-shadow 0.2s, color 0.2s;
             letter-spacing: 1px;
             outline: none;
             position: relative;
@@ -160,8 +209,14 @@
             margin-bottom: 0.2em;
             background: var(--surface-dark);
             color: var(--white);
-            transition: border 0.2s, box-shadow 0.2s, background 0.2s;
+            transition: border 0.2s, box-shadow 0.2s, background 0.2s, color 0.2s;
             box-shadow: var(--shadow-light);
+        }
+        body.light-mode #guess-input, 
+        body.light-mode #username-input {
+            background: #f0f4fa;
+            color: #232336;
+            border: 1.5px solid #a7bfe8;
         }
         #guess-input:focus, #username-input:focus {
             border: 2px solid var(--accent);
@@ -200,6 +255,10 @@
             overflow: hidden;
             color: var(--white);
         }
+        body.light-mode #scoreboard {
+            background: #f0f4fa;
+            color: #232336;
+        }
         #scoreboard th, #scoreboard td {
             padding: 10px 6px;
             text-align: center;
@@ -211,16 +270,31 @@
             letter-spacing: 0.5px;
             border-bottom: 2px solid var(--accent);
         }
+        body.light-mode #scoreboard th {
+            background: #a7bfe8;
+            color: #232336;
+            border-bottom: 2px solid #a7bfe8;
+        }
         #scoreboard tr:nth-child(even) {
             background: #18181b;
         }
         #scoreboard tr:nth-child(odd) {
             background: #111112;
         }
+        body.light-mode #scoreboard tr:nth-child(even) {
+            background: #f0f4fa;
+        }
+        body.light-mode #scoreboard tr:nth-child(odd) {
+            background: #e7eaf6;
+        }
         #scoreboard tr:hover {
             background: var(--accent);
             color: var(--white);
             transition: background 0.2s, color 0.2s;
+        }
+        body.light-mode #scoreboard tr:hover {
+            background: #a7bfe8;
+            color: #232336;
         }
         /* Fullscreen scoreboard */
         #scoreboard-fullscreen {
@@ -234,6 +308,9 @@
             flex-direction:column;
             animation: fadein 0.6s;
         }
+        body.light-mode #scoreboard-fullscreen {
+            background: #e7eaf6;
+        }
         #scoreboard-fullscreen table {
             background: var(--surface-dark);
             width: 100%;
@@ -241,6 +318,10 @@
             border-radius: 8px;
             color: var(--white);
             box-shadow: var(--shadow);
+        }
+        body.light-mode #scoreboard-fullscreen table {
+            background: #f0f4fa;
+            color: #232336;
         }
         #scoreboard-fullscreen th, #scoreboard-fullscreen td {
             padding: 12px 8px;
@@ -254,16 +335,31 @@
             letter-spacing: 0.5px;
             border-bottom: 2px solid var(--accent);
         }
+        body.light-mode #scoreboard-fullscreen th {
+            background: #a7bfe8;
+            color: #232336;
+            border-bottom: 2px solid #a7bfe8;
+        }
         #scoreboard-fullscreen tr:nth-child(even) {
             background: #18181b;
         }
         #scoreboard-fullscreen tr:nth-child(odd) {
             background: #111112;
         }
+        body.light-mode #scoreboard-fullscreen tr:nth-child(even) {
+            background: #f0f4fa;
+        }
+        body.light-mode #scoreboard-fullscreen tr:nth-child(odd) {
+            background: #e7eaf6;
+        }
         #scoreboard-fullscreen tr:hover {
             background: var(--accent);
             color: var(--white);
             transition: background 0.2s, color 0.2s;
+        }
+        body.light-mode #scoreboard-fullscreen tr:hover {
+            background: #a7bfe8;
+            color: #232336;
         }
         @keyframes scoreboard-pop {
             0% { transform: scale(0.85); opacity: 0;}
@@ -311,6 +407,9 @@
     </style>
 </head>
 <body>
+    <button class="theme-toggle-btn" id="theme-toggle-btn" title="Toggle light/dark mode" aria-label="Toggle theme">
+        <span id="theme-toggle-icon">🌙</span>
+    </button>
     <div id="main-content" style="display: flex; flex-direction: row; align-items: flex-start; justify-content: center; width: 100vw; min-height: 100vh;">
         <div class="game-container" style="flex: 1 1 400px; max-width: 480px;">
             <div class="particle" style="width:60px;height:60px;top:10%;left:5%;background:linear-gradient(135deg,#f5e1f7 0%,#f472b6 100%);animation-delay:0s;"></div>
@@ -367,19 +466,35 @@
         </div>
     </div>
     <script>
-        const startBtn = document.getElementById('start-btn');
-        const guessSection = document.getElementById('guess-section');
-        const guessBtn = document.getElementById('guess-btn');
-        const guessInput = document.getElementById('guess-input');
-        const gameStatus = document.getElementById('game-status');
-        const resultDiv = document.getElementById('result');
-        const usernameInput = document.getElementById('username-input');
-        const userResultDiv = document.getElementById('user-result');
-        const toggleScoreboardBtn = document.getElementById('toggle-scoreboard-btn');
-        const scoreboardSection = document.getElementById('scoreboard-section');
-        const scoreboardFullscreen = document.getElementById('scoreboard-fullscreen');
-        const hideScoreboardBtn = document.getElementById('hide-scoreboard-btn');
-        const refreshScoreboardBtn = document.getElementById('refresh-scoreboard-btn');
+        // Theme toggle logic
+        const themeToggleBtn = document.getElementById('theme-toggle-btn');
+        const themeToggleIcon = document.getElementById('theme-toggle-icon');
+        function setTheme(mode) {
+            if (mode === 'light') {
+                document.body.classList.add('light-mode');
+                themeToggleIcon.textContent = '🌙';
+            } else {
+                document.body.classList.remove('light-mode');
+                themeToggleIcon.textContent = '☀️';
+            }
+        }
+        function toggleTheme() {
+            const isLight = document.body.classList.toggle('light-mode');
+            localStorage.setItem('theme', isLight ? 'light' : 'dark');
+            setTheme(isLight ? 'light' : 'dark');
+        }
+        themeToggleBtn.addEventListener('click', toggleTheme);
+        // On load, set theme from localStorage or system preference
+        (function() {
+            let theme = localStorage.getItem('theme');
+            if (!theme) {
+                theme = window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
+            }
+            setTheme(theme);
+        })();
+
+        // ...existing JS code for the game...
+        let guessedNumbers = new Set();
 
         function updateScoreboard() {
             fetch('/scoreboard')
@@ -451,6 +566,20 @@
                     }
                 });
         }
+
+        const startBtn = document.getElementById('start-btn');
+        const guessSection = document.getElementById('guess-section');
+        const guessBtn = document.getElementById('guess-btn');
+        const guessInput = document.getElementById('guess-input');
+        const gameStatus = document.getElementById('game-status');
+        const resultDiv = document.getElementById('result');
+        const usernameInput = document.getElementById('username-input');
+        const userResultDiv = document.getElementById('user-result');
+        const toggleScoreboardBtn = document.getElementById('toggle-scoreboard-btn');
+        const scoreboardSection = document.getElementById('scoreboard-section');
+        const scoreboardFullscreen = document.getElementById('scoreboard-fullscreen');
+        const hideScoreboardBtn = document.getElementById('hide-scoreboard-btn');
+        const refreshScoreboardBtn = document.getElementById('refresh-scoreboard-btn');
 
         startBtn.addEventListener('click', function() {
             const username = usernameInput.value.trim();

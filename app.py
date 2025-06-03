@@ -19,7 +19,7 @@ def get_db():
 def init_db():
     with get_db() as conn:
         with conn.cursor() as cur:
-            # Drop tables in correct order to avoid FK issues
+            # Only keep tables needed for single player
             cur.execute("DROP TABLE IF EXISTS game_state;")
             cur.execute("DROP TABLE IF EXISTS games;")
             cur.execute("DROP TABLE IF EXISTS users CASCADE;")
