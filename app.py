@@ -10,10 +10,14 @@ app.secret_key = 'your_secret_key'  # Needed for session
 
 
 # Set your PostgreSQL connection string here
-DATABASE_URL = os.environ.get(
-    "DATABASE_URL",
-    "dbname=postgres user=postgres password=aswin host=localhost"
-)
+# DATABASE_URL = os.environ.get(
+#     "DATABASE_URL",
+#     "dbname=postgres user=postgres password=aswin host=localhost"
+# )
+
+DATABASE_URL = os.environ.get("DATABASE_URL")
+conn = psycopg.connect(DATABASE_URL, autocommit=True)
+
 
 def get_db():
     return psycopg.connect(DATABASE_URL, autocommit=True)
