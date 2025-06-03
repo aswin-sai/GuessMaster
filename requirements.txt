@@ -1,5 +1,3 @@
---only-binary=backports.zoneinfo
-backports.zoneinfo==0.2.1
 blinker==1.8.2
 click==8.1.8
 colorama==0.4.6
